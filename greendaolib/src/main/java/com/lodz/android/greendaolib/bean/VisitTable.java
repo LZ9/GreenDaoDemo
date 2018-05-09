@@ -19,14 +19,12 @@ public class VisitTable {
     @NotNull
     private String name;
     @NotNull
-    private String time;
+    private Date time;
     @NotNull
-    private Date content;
-
-
-    @Generated(hash = 535092961)
-    public VisitTable(Long id, @NotNull String name, @NotNull String time,
-            @NotNull Date content) {
+    private String content;
+    @Generated(hash = 1200031990)
+    public VisitTable(Long id, @NotNull String name, @NotNull Date time,
+            @NotNull String content) {
         this.id = id;
         this.name = name;
         this.time = time;
@@ -47,16 +45,17 @@ public class VisitTable {
     public void setName(String name) {
         this.name = name;
     }
-    public String getTime() {
+    public Date getTime() {
         return this.time;
     }
-    public void setTime(String time) {
+    public void setTime(Date time) {
         this.time = time;
     }
-    public Date getContent() {
+    public String getContent() {
         return this.content;
     }
-    public void setContent(Date content) {
+    public void setContent(String content) {
         this.content = content;
     }
+
 }

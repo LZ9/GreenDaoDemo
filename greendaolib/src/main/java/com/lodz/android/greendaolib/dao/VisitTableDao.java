@@ -26,8 +26,8 @@ public class VisitTableDao extends AbstractDao<VisitTable, Long> {
     public static class Properties {
         public final static Property Id = new Property(0, Long.class, "id", true, "_id");
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
-        public final static Property Time = new Property(2, String.class, "time", false, "TIME");
-        public final static Property Content = new Property(3, java.util.Date.class, "content", false, "CONTENT");
+        public final static Property Time = new Property(2, java.util.Date.class, "time", false, "TIME");
+        public final static Property Content = new Property(3, String.class, "content", false, "CONTENT");
     }
 
 
@@ -45,8 +45,8 @@ public class VisitTableDao extends AbstractDao<VisitTable, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"VISIT_TABLE\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
                 "\"NAME\" TEXT NOT NULL ," + // 1: name
-                "\"TIME\" TEXT NOT NULL ," + // 2: time
-                "\"CONTENT\" INTEGER NOT NULL );"); // 3: content
+                "\"TIME\" INTEGER NOT NULL ," + // 2: time
+                "\"CONTENT\" TEXT NOT NULL );"); // 3: content
     }
 
     /** Drops the underlying database table. */
@@ -64,8 +64,8 @@ public class VisitTableDao extends AbstractDao<VisitTable, Long> {
             stmt.bindLong(1, id);
         }
         stmt.bindString(2, entity.getName());
-        stmt.bindString(3, entity.getTime());
-        stmt.bindLong(4, entity.getContent().getTime());
+        stmt.bindLong(3, entity.getTime().getTime());
+        stmt.bindString(4, entity.getContent());
     }
 
     @Override
@@ -77,8 +77,8 @@ public class VisitTableDao extends AbstractDao<VisitTable, Long> {
             stmt.bindLong(1, id);
         }
         stmt.bindString(2, entity.getName());
-        stmt.bindString(3, entity.getTime());
-        stmt.bindLong(4, entity.getContent().getTime());
+        stmt.bindLong(3, entity.getTime().getTime());
+        stmt.bindString(4, entity.getContent());
     }
 
     @Override
@@ -91,8 +91,8 @@ public class VisitTableDao extends AbstractDao<VisitTable, Long> {
         VisitTable entity = new VisitTable( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
             cursor.getString(offset + 1), // name
-            cursor.getString(offset + 2), // time
-            new java.util.Date(cursor.getLong(offset + 3)) // content
+            new java.util.Date(cursor.getLong(offset + 2)), // time
+            cursor.getString(offset + 3) // content
         );
         return entity;
     }
@@ -101,8 +101,8 @@ public class VisitTableDao extends AbstractDao<VisitTable, Long> {
     public void readEntity(Cursor cursor, VisitTable entity, int offset) {
         entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setName(cursor.getString(offset + 1));
-        entity.setTime(cursor.getString(offset + 2));
-        entity.setContent(new java.util.Date(cursor.getLong(offset + 3)));
+        entity.setTime(new java.util.Date(cursor.getLong(offset + 2)));
+        entity.setContent(cursor.getString(offset + 3));
      }
     
     @Override

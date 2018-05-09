@@ -16,9 +16,8 @@ public class App extends BaseApplication{
 
     /** 初始化数据库 */
     private void initGreenDao() {
-        GreenDaoManager.get()
-                .init(this)// 初始化数据库
-                .setPrintLog(true);//打开数据库日志
+        GreenDaoManager.get().init(this);// 初始化数据库
+        GreenDaoManager.get().setPrintLog(true);//打开数据库日志
     }
 
     /** 配置标题栏 */

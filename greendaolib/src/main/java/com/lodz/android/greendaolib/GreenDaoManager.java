@@ -38,21 +38,19 @@ public class GreenDaoManager {
      * 初始化
      * @param context 上下文
      */
-    public GreenDaoManager init(Context context){
+    public void init(Context context){
         UpgradeDevOpenHelper devOpenHelper = new UpgradeDevOpenHelper(context, DB_NAME, null);
         Database db = devOpenHelper.getWritableDb();
         mDaoSession = new DaoMaster(db).newSession();
         Log.d(TAG, "greendao init complete");
-        return this;
     }
 
     /**
      * 设置打印日志
      * @param isPrint 是否打印
      */
-    public GreenDaoManager setPrintLog(boolean isPrint){
+    public void setPrintLog(boolean isPrint){
         isPrintLog = isPrint;
-        return this;
     }
 
     protected boolean isPrintLog() {

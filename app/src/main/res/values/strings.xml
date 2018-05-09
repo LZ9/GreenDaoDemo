@@ -2,4 +2,10 @@
     <string name="app_name">GreenDaoDemo</string>
 
     <string name="main_title">GreenDao测试类</string>
+    <string name="main_input_hint">输入访查内容</string>
+    <string name="main_add">添加</string>
+    <string name="main_update">修改</string>
+    <string name="main_delete">删除</string>
+
+
 </resources>

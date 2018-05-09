@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <com.lodz.android.component.widget.base.TitleBarLayout
+        android:id="@+id/title_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:isNeedBackBtn="false"
@@ -13,10 +14,33 @@
 
     </com.lodz.android.component.widget.base.TitleBarLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:orientation="horizontal"
+        android:padding="5dp">
 
+        <EditText
+            android:id="@+id/input_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/main_input_hint"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/add_btn"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="@string/main_add" />
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
 
 </LinearLayout>
