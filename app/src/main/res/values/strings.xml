@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GreenDaoDemo</string>
+
+    <string name="main_title">GreenDao测试类</string>
 </resources>
