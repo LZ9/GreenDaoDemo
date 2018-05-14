@@ -21,153 +21,122 @@ import io.reactivex.ObservableOnSubscribe;
  */
 public class GreenDaoImpl implements DaoHelper{
     @Override
-    public Observable<List<VisitBean>> queryVisitList() {
-        return Observable.create(new ObservableOnSubscribe<List<VisitBean>>() {
+    public DbAgent<List<VisitBean>> queryVisitList() {
+        return new DbAgent<>(Observable.create(new ObservableOnSubscribe<List<VisitBean>>() {
             @Override
             public void subscribe(ObservableEmitter<List<VisitBean>> emitter) throws Exception {
-                if (emitter.isDisposed()){
+                List<VisitTable> list = GreenDaoManager.get().getDaoSession()
+                        .getVisitTableDao()
+                        .queryBuilder()
+                        .orderDesc(VisitTableDao.Properties.Time)
+                        .list();
+                if (ArrayUtils.isEmpty(list)){
+                    if (emitter.isDisposed()){
+                        return;
+                    }
+                    emitter.onNext(new ArrayList<VisitBean>());
+                    emitter.onComplete();
                     return;
                 }
 
-                try {
-                    List<VisitTable> list = GreenDaoManager.get().getDaoSession()
-                            .getVisitTableDao()
-                            .queryBuilder()
-                            .orderDesc(VisitTableDao.Properties.Time)
-                            .list();
-                    if (ArrayUtils.isEmpty(list)){
-                        if (emitter.isDisposed()){
-                            return;
-                        }
-                        emitter.onNext(new ArrayList<VisitBean>());
-                        emitter.onComplete();
-                        return;
-                    }
-
-                    List<VisitBean> results = new ArrayList<>();
-                    for (VisitTable table : list) {
-                        VisitBean bean = new VisitBean(table.getId(), table.getName(),
-                                DateUtils.getFormatString(DateUtils.TYPE_2, table.getTime()), table.getContent());
-                        results.add(bean);
-                    }
-                    emitter.onNext(results);
-                    emitter.onComplete();
-                }catch (Exception e){
-                    e.printStackTrace();
-                    emitter.onError(e);
+                List<VisitBean> results = new ArrayList<>();
+                for (VisitTable table : list) {
+                    VisitBean bean = new VisitBean(table.getId(), table.getName(),
+                            DateUtils.getFormatString(DateUtils.TYPE_2, table.getTime()), table.getContent());
+                    results.add(bean);
                 }
+                if (emitter.isDisposed()){
+                    return;
+                }
+                emitter.onNext(results);
+                emitter.onComplete();
             }
-        });
+        }));
     }
 
     @Override
-    public Observable<Long> insertVisitData(final String name, final String content) {
-        return Observable.create(new ObservableOnSubscribe<Long>() {
+    public DbAgent<Long> insertVisitData(final String name, final String content) {
+        return new DbAgent<>(Observable.create(new ObservableOnSubscribe<Long>() {
             @Override
             public void subscribe(ObservableEmitter<Long> emitter) throws Exception {
+                VisitTable table = new VisitTable();
+                table.setName(name);
+                table.setTime(new Date());
+                table.setContent(content);
+                long id = GreenDaoManager.get().getDaoSession().getVisitTableDao().insert(table);
                 if (emitter.isDisposed()){
                     return;
                 }
-                try {
-                    VisitTable table = new VisitTable();
-                    table.setName(name);
-                    table.setTime(new Date());
+                emitter.onNext(id);
+                emitter.onComplete();
+            }
+        }));
+    }
+
+    @Override
+    public DbAgent<Boolean> deleteVisitData(final long id) {
+        return new DbAgent<>(Observable.create(new ObservableOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
+                List<VisitTable> list = GreenDaoManager.get().getDaoSession()
+                        .getVisitTableDao()
+                        .queryBuilder()
+                        .where(VisitTableDao.Properties.Id.eq(id))
+                        .list();
+
+                if (ArrayUtils.isEmpty(list)){
+                    if (emitter.isDisposed()){
+                        return;
+                    }
+                    emitter.onNext(false);
+                    emitter.onComplete();
+                    return;
+                }
+
+                for (VisitTable table : list) {
+                    GreenDaoManager.get().getDaoSession().getVisitTableDao().delete(table);
+                }
+                if (emitter.isDisposed()){
+                    return;
+                }
+                emitter.onNext(true);
+                emitter.onComplete();
+            }
+        }));
+    }
+
+    @Override
+    public DbAgent<Boolean> updateVisitData(final long id, final String content) {
+        return new DbAgent<>(Observable.create(new ObservableOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
+                List<VisitTable> list = GreenDaoManager.get().getDaoSession()
+                        .getVisitTableDao()
+                        .queryBuilder()
+                        .where(VisitTableDao.Properties.Id.eq(id))
+                        .list();
+
+                if (ArrayUtils.isEmpty(list)){
+                    if (emitter.isDisposed()){
+                        return;
+                    }
+                    emitter.onNext(false);
+                    emitter.onComplete();
+                    return;
+                }
+
+                for (VisitTable table : list) {
                     table.setContent(content);
-                    long id = GreenDaoManager.get().getDaoSession().getVisitTableDao().insert(table);
-                    if (emitter.isDisposed()){
-                        return;
-                    }
-                    emitter.onNext(id);
-                    emitter.onComplete();
-                }catch (Exception e){
-                    e.printStackTrace();
-                    emitter.onError(e);
+                    table.setTime(new Date());
+                    GreenDaoManager.get().getDaoSession().getVisitTableDao().update(table);
                 }
-            }
-        });
-    }
-
-    @Override
-    public Observable<Boolean> deleteVisitData(final long id) {
-        return Observable.create(new ObservableOnSubscribe<Boolean>() {
-            @Override
-            public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
                 if (emitter.isDisposed()){
                     return;
                 }
-
-                try {
-                    List<VisitTable> list = GreenDaoManager.get().getDaoSession()
-                            .getVisitTableDao()
-                            .queryBuilder()
-                            .where(VisitTableDao.Properties.Id.eq(id))
-                            .list();
-
-                    if (ArrayUtils.isEmpty(list)){
-                        if (emitter.isDisposed()){
-                            return;
-                        }
-                        emitter.onNext(false);
-                        emitter.onComplete();
-                        return;
-                    }
-
-                    for (VisitTable table : list) {
-                        GreenDaoManager.get().getDaoSession().getVisitTableDao().delete(table);
-                    }
-                    if (emitter.isDisposed()){
-                        return;
-                    }
-                    emitter.onNext(true);
-                    emitter.onComplete();
-                }catch (Exception e){
-                    e.printStackTrace();
-                    emitter.onError(e);
-                }
+                emitter.onNext(true);
+                emitter.onComplete();
             }
-        });
+        }));
     }
-
-    @Override
-    public Observable<Boolean> updateVisitData(final long id, final String content) {
-        return Observable.create(new ObservableOnSubscribe<Boolean>() {
-            @Override
-            public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
-                if (emitter.isDisposed()){
-                    return;
-                }
-                try {
-                    List<VisitTable> list = GreenDaoManager.get().getDaoSession()
-                            .getVisitTableDao()
-                            .queryBuilder()
-                            .where(VisitTableDao.Properties.Id.eq(id))
-                            .list();
-
-                    if (ArrayUtils.isEmpty(list)){
-                        if (emitter.isDisposed()){
-                            return;
-                        }
-                        emitter.onNext(false);
-                        emitter.onComplete();
-                        return;
-                    }
-
-                    for (VisitTable table : list) {
-                        table.setContent(content);
-                        table.setTime(new Date());
-                        GreenDaoManager.get().getDaoSession().getVisitTableDao().update(table);
-                    }
-                    if (emitter.isDisposed()){
-                        return;
-                    }
-                    emitter.onNext(true);
-                    emitter.onComplete();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
 
 }

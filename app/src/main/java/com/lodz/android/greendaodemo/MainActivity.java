@@ -112,7 +112,7 @@ public class MainActivity extends AbsActivity {
 
     /** 查询数据 */
     private void queryVisitData() {
-        mDaoHelper.queryVisitList()
+        mDaoHelper.queryVisitList().rx()
                 .compose(RxUtils.<List<VisitBean>>ioToMainObservable())
                 .compose(this.<List<VisitBean>>bindUntilEvent(ActivityEvent.DESTROY))
                 .subscribe(new ProgressObserver<List<VisitBean>>() {
@@ -134,11 +134,11 @@ public class MainActivity extends AbsActivity {
      * @param content 内容
      */
     private void insertVisitData(String content) {
-        mDaoHelper.insertVisitData(NAMES[new Random().nextInt(3)], content)
+        mDaoHelper.insertVisitData(NAMES[new Random().nextInt(3)], content).rx()
                 .flatMap(new Function<Long, ObservableSource<List<VisitBean>>>() {
                     @Override
                     public ObservableSource<List<VisitBean>> apply(Long aLong) throws Exception {
-                        return mDaoHelper.queryVisitList();
+                        return mDaoHelper.queryVisitList().rx();
                     }
                 })
                 .compose(RxUtils.<List<VisitBean>>ioToMainObservable())
@@ -164,14 +164,14 @@ public class MainActivity extends AbsActivity {
      * @param id 编号
      */
     private void deleteVisitData(long id) {
-        mDaoHelper.deleteVisitData(id)
+        mDaoHelper.deleteVisitData(id).rx()
                 .flatMap(new Function<Boolean, ObservableSource<List<VisitBean>>>() {
                     @Override
                     public ObservableSource<List<VisitBean>> apply(Boolean isSuccess) throws Exception {
                         if (!isSuccess){
                             throw new IllegalArgumentException("delete fail");
                         }
-                        return mDaoHelper.queryVisitList();
+                        return mDaoHelper.queryVisitList().rx();
                     }
                 })
                 .compose(RxUtils.<List<VisitBean>>ioToMainObservable())
@@ -196,14 +196,14 @@ public class MainActivity extends AbsActivity {
      * @param content 内容
      */
     private void updateVisitData(long id, String content) {
-        mDaoHelper.updateVisitData(id, content)
+        mDaoHelper.updateVisitData(id, content).rx()
                 .flatMap(new Function<Boolean, ObservableSource<List<VisitBean>>>() {
                     @Override
                     public ObservableSource<List<VisitBean>> apply(Boolean isSuccess) throws Exception {
                         if (!isSuccess){
                             throw new IllegalArgumentException("update fail");
                         }
-                        return mDaoHelper.queryVisitList();
+                        return mDaoHelper.queryVisitList().rx();
                     }
                 })
                 .compose(RxUtils.<List<VisitBean>>ioToMainObservable())
